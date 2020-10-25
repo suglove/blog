@@ -1,0 +1,106 @@
+<div id="add_dialog" title="添加用户" style="width:900px;height:600px;">
+    <div style="padding:20px 20px 40px 0px;" >
+        <form enctype="multipart/form-data" id="add_form" method="post">
+            <table>
+                <tr>
+                    <td>标题：</td>
+                    <td><input id="add_title" style="width: 800px;" name="title" class="easyui-validatebox" required="true"/></td>
+                </tr>
+
+                <tr>
+                    <td>简介：</td>
+                    <td><textarea id="add_desc" style="width: 800px;height: 52px;word-break: break-all" name="desc" class="easyui-validatebox" required="true"></textarea></td>
+                </tr>
+
+                <tr>
+                    <td>类型：</td>
+                    <td>
+                        <select id="add_type" name="type"  style="width:153px;" class="easyui-combobox " editable="false" required="true"  >
+
+                            {{range $k,$v:= $.category}}
+                                <option value="{{$v.Id}}" {{if eq $k 0}} selected {{else}} {{end}}>{{$v.Title}}</option>
+                            {{end}}
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>状态：</td>
+                    <td>
+                        <select name="status" id="add_status"  style="width:153px;" class="easyui-combobox " editable="true" required="true"  >
+                            <option value="2" >禁用</option>
+                            <option value="1" >正常</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>排序：</td>
+                    <td><input id="add_sort" name="sort" class="easyui-validatebox" /></td>
+                </tr>
+                <tr>
+                    <td>图片：</td>
+                    <td>
+                        <img src="" class="add_img" alt="" width="50" height="50">
+                        <input id="add_photoUrl" name="photoUrl">
+                        <input id="add_img" type="hidden" name="img" value="" >
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>内容：</td>
+                    <td>
+                        <div id="add_textarea" style='width:100%;height:550px;'>
+
+                        </div>
+                        <textarea   id="add_text1" style="display: none;" name="content"></textarea>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</div>
+
+<script>
+    var add_E = window.wangEditor;
+    var add_editor = new add_E('#add_textarea');
+    var add_$text1 = $('#add_text1');
+    add_editor.customConfig.uploadImgServer = "{{urlfor "admin.ArticleController.UploadImg"}}";
+
+
+    add_editor.customConfig.uploadFileName = 'info_upload_img';
+    add_editor.customConfig.uploadImgHooks = {
+
+        // 图片上传并返回了结果，图片插入已成功
+
+        // 图片上传并返回了结果，但图片插入时出错了
+        fail: function(xhr, editor, resData) {
+            console.log('fail', resData)
+        },
+        // 上传图片出错，一般为 http 请求的错误
+        error: function(xhr, editor, resData) {
+            console.log('error', xhr, resData)
+        },
+        // 图片上传并返回了结果，想要自己把图片插入到编辑器中
+        // 例如服务器端返回的不是 { errno: 0, data: [...] } 这种格式，可使用 customInsert
+        customInsert: function(insertImgFn, result) {
+            // result 即服务端返回的接口
+            if(!result.code){
+                $.messager.show({    // show error message
+                    title: '错误',
+                    msg: result.msg
+                });
+            }else{
+                // insertImgFn 可把图片插入到编辑器，传入图片 src ，执行函数即可
+                insertImgFn(result.data)
+            }
+
+
+        }
+    }
+    add_editor.customConfig.onchange = function (html) {
+        add_$text1.val(html);
+    };
+    add_editor.create();
+    add_$text1.val(add_editor.txt.html());
+    $('#textarea .w-e-text,.w-e-text-container').attr('style', 'border: 1px solid #ccc;width:100%;height:500px;');
+</script>

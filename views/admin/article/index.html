@@ -1,0 +1,356 @@
+{{template "../public/easyuiHead.html" .}}
+
+<script type="text/javascript">
+    var statuslist = [
+        {statusid:'1',name:'正常'},
+        {statusid:'2',name:'禁用'}
+    ];
+    var URL="{{urlfor "admin.ArticleController.List"}}";
+    $(function(){
+        //角色列表
+        $("#datagrid").datagrid({
+            title:'角色管理',
+            url:URL,
+            method:'GET',
+            pagination:true,
+            fitColumns:true,
+            striped:true,
+            rownumbers:true,
+            singleSelect:true,
+            pageSize:10,
+            pageList: [2,5,10,20],
+            idField:'Id',
+            columns:[[
+                {field:'id',title:'ID',width:50,align:'center'},
+                {field:'title',title:'标题',width:250,align:'center',editor:'text'},
+                // {field:'status',title:'状态',width:50,align:'center',editor:'text'},
+                {field:'c_time',title:'添加时间',width:150,align:'center',
+                    formatter:function(value,row,index){
+
+                        //if(value) return phpjs.date("Y-m-d H:i:s",value);
+                        return value;
+                    }
+                },
+                {field:'status',title:'状态',width:100,align:'center',
+                    formatter:function(value){
+                        for(var i=0; i<statuslist.length; i++){
+                            if (statuslist[i].statusid == value) return statuslist[i].name;
+                        }
+                        return value;
+                    },
+                    editor:{
+                        type:'combobox',
+                        options:{
+                            valueField:'statusid',
+                            textField:'name',
+                            data:statuslist,
+                            required:true
+                        }
+                    }
+                },
+                {field:'action',title:'操作',width:200,align:'center',
+                    formatter:function(value,row,index){
+
+                        var c = '<a href="javascript:;" onclick="delrow('+row.id+')">删除</a> ';
+                        return c;
+                    }
+                }
+            ]],
+
+            onDblClickRow:function(index,row){
+                editrow();
+            },
+            onRowContextMenu:function(e, index, row){
+                e.preventDefault();
+                $(this).datagrid("selectRow",index);
+                $('#mm').menu('show',{
+                    left: e.clientX,
+                    top: e.clientY
+                });
+            },
+            onHeaderContextMenu:function(e, field){
+                e.preventDefault();
+                $('#mm1').menu('show',{
+                    left: e.clientX,
+                    top: e.clientY
+                });
+            }
+        });
+
+        //创建添加文章窗口
+        $("#add_dialog").dialog({
+            modal:true,
+            resizable:true,
+            title:"添加文章",
+            top:50,
+            closed:true,
+            buttons:[{
+                text:'保存',
+                iconCls:'icon-save',
+                handler:function(){
+                    $("#add_form").form('submit',{
+                        url:{{urlfor "admin.ArticleController.Add"}},
+                        onSubmit:function(){
+                            return $("#add_form").form('validate');
+                        },
+                        success:function(r){
+                            var r = $.parseJSON( r );
+                            if(r.code){
+                                vac.alert(r.msg);
+                                $("#add_dialog").dialog("close");
+                                $("#datagrid").datagrid('reload');
+                            }else{
+                                vac.alert(r.msg);
+                            }
+                        }
+                    });
+                }
+            },{
+                text:'取消',
+                iconCls:'icon-cancel',
+                handler:function(){
+                    $("#add_dialog").dialog("close");
+                }
+            }]
+        });
+
+
+
+        //修改文章窗口
+        $("#edit_dialog").dialog({
+            modal:true,
+            resizable:true,
+            title:"修改文章",
+            top:50,
+            closed:true,
+            buttons:[{
+                text:'保存',
+                iconCls:'icon-save',
+                handler:function(){
+                    $("#edit_form").form('submit',{
+                        url:{{urlfor "admin.ArticleController.Update"}},
+                        onSubmit:function(){
+                            return $("#edit_form").form('validate');
+                        },
+                        success:function(r){
+                            var r = $.parseJSON( r );
+                            if(r.code){
+                                vac.alert(r.msg);
+                                $("#edit_dialog").dialog("close");
+                                $("#datagrid").datagrid('reload');
+                            }else{
+                                vac.alert(r.msg);
+                            }
+                        }
+                    });
+                }
+            },{
+                text:'取消',
+                iconCls:'icon-cancel',
+                handler:function(){
+                    $("#edit_dialog").dialog("close");
+                }
+            }]
+        });
+
+
+
+
+
+        //上传图片操作
+        $('#add_photoUrl').filebox({
+            prompt: '请选择一张图片...',
+            width: '280px',
+            buttonText: '点击选择图片'
+        })
+        $('#add_photoUrl').filebox({
+            onChange: function (e) {
+                var fileObj = $("input[name='photoUrl']")[0];
+                var allowExtention = ".jpg,.bmp,.gif,.png,.jpeg";
+                var extention = fileObj.value.substring(fileObj.value.lastIndexOf(".") + 1).toLowerCase();
+                if (allowExtention.indexOf(extention) == -1) {
+                    $.messager.show({    // show error message
+                        title: '错误',
+                        msg: "只支持以下格式图片：" + allowExtention + "."
+                    });
+                    $('#add_photoUrl').filebox('reset');
+                    $('#add_photoUrl').filebox('setValue', "");
+                    $('#add_photoUrl').filebox('disableValidation');
+                }
+                uploadImg("add_photoUrl","add_img")
+
+            }
+        })
+
+        //上传图片操作
+        $('#article_photoUrl').filebox({
+            prompt: '请选择一张图片...',
+            width: '280px',
+            buttonText: '点击选择图片'
+        })
+        $('#article_photoUrl').filebox({
+            onChange: function (e) {
+                var fileObj = $("input[name='photoUrl']")[0];
+                var allowExtention = ".jpg,.bmp,.gif,.png,.jpeg";
+                var extention = fileObj.value.substring(fileObj.value.lastIndexOf(".") + 1).toLowerCase();
+                if (allowExtention.indexOf(extention) == -1) {
+                    $.messager.show({    // show error message
+                        title: '错误',
+                        msg: "只支持以下格式图片：" + allowExtention + "."
+                    });
+                    $('#article_photoUrl').filebox('reset');
+                    $('#article_photoUrl').filebox('setValue', "");
+                    $('#article_photoUrl').filebox('disableValidation');
+                }
+                uploadImg("article_photoUrl","article_img")
+
+            }
+        })
+
+
+
+    })
+
+    function uploadImg(up,imgid) {
+        var files = $("#" + up).next().find('input[type=file]')[0].files;
+        //上传图片
+        var url = "{{urlfor "admin.ArticleController.UploadImg"}}"
+
+        var formData = new FormData();
+        formData.append('info_upload_img', files[0]);
+        $.ajax({
+            type: "post",
+            url: url,
+            processData: false,
+            contentType: false,
+            data:formData,
+            dataType: 'json',
+            success: function (res) {
+
+                if(!res.code){
+                    //失败
+                    $.messager.alert('提示：',res.msg);
+                }else{
+                    //成功
+                    $("#" + imgid).val(res.imgPath)
+                    $("." + imgid).attr("src","/"+res.imgPath)
+                }
+            }
+        });
+    }
+    //新增行
+    function addrow(){
+        $('#add_dialog').dialog('open');
+        $('#add_form').form('clear');
+        $('#edit_form').form('clear');
+        //获取category数据
+
+        $("#add_status").combobox("select",1)
+        $("#add_type").combobox("select",1)
+
+
+    }
+    function editrow(){
+        $('#edit_dialog').dialog('open');
+
+        $('#add_form').form('clear');
+        $('#edit_form').form('clear');
+        //请求数据
+        var row = $("#datagrid").datagrid("getSelected");
+        $.post("{{urlfor "admin.ArticleController.Get"}}",{"Id":row.id},function(res){
+            if(res.code){
+                //把数据写入表单中
+                $("#article_title").val(res.data["title"])
+                $("#article_id").val(res.data["id"])
+                $("#article_desc").val(res.data["desc"])
+                $("#article_sort").val(res.data["sort"])
+                $("#article_img").val(res.data["img"])
+                $("#photoUrl").val(res.data["img"])
+                $("#article_status").combobox("select",res.data["status"])
+                $("#article_type").combobox("select",res.data["type"])
+                $(".article_img").attr("src","/"+res.data["img"])
+                editor.txt.html(res.data["content"]);
+
+            }else{
+                $.messager.alert('提示：',res.msg);
+            }
+        })
+    }
+
+    //取消
+    function cancelrow(){
+        if(! $("#datagrid").datagrid("getSelected")){
+            vac.alert("请选择要取消的行");
+            return;
+        }
+        $("#datagrid").datagrid("cancelEdit",vac.getindex("datagrid"));
+    }
+    //刷新
+    function reloadrow(){
+        $("#datagrid").datagrid("reload");
+    }
+
+    //删除
+    function delrow(){
+        $.messager.confirm('Confirm','你确定要删除?',function(r){
+            if (r){
+                var row = $("#datagrid").datagrid("getSelected");
+                if(! row){
+                    vac.alert("请选择要删除的行");
+                    return;
+                }
+
+                $.post("{{urlfor "admin.ArticleController.Delete"}}",{"Id":row.id},function(res){
+                    if(res.code){
+                        $.messager.alert('提示：',res.msg);
+                        $("#datagrid").datagrid('reload');
+                    }else{
+                        $.messager.alert('提示：',res.msg);
+                    }
+                })
+
+            }
+        });
+    }
+
+
+
+
+</script>
+<body>
+<table id="datagrid" toolbar="#tb"></table>
+<div id="tb" style="padding:5px;height:auto">
+    <a href="#" icon='icon-add' plain="true" onclick="addrow()" class="easyui-linkbutton" >新增</a>
+    <a href="#" icon='icon-edit' plain="true" onclick="editrow()" class="easyui-linkbutton" >编辑</a>
+    <a href="#" icon='icon-cancel' plain="true" onclick="delrow()" class="easyui-linkbutton" >删除</a>
+    <a href="#" icon='icon-reload' plain="true" onclick="reloadrow()" class="easyui-linkbutton" >刷新</a>
+</div>
+<!--表格内的右键菜单-->
+<div id="mm" class="easyui-menu" style="width:120px;display: none" >
+    <div iconCls='icon-add' onclick="addrow()">新增</div>
+    <div iconCls="icon-edit" onclick="editrow()">编辑</div>
+    <div iconCls='icon-cancel' onclick="cancelrow()">取消</div>
+    <div class="menu-sep"></div>
+    <div iconCls='icon-cancel' onclick="delrow()">删除</div>
+    <div iconCls='icon-reload' onclick="reloadrow()">刷新</div>
+    <div class="menu-sep"></div>
+    <div>Exit</div>
+</div>
+<!--表头的右键菜单-->
+<div id="mm1" class="easyui-menu" style="width:120px;display: none"  >
+    <div icon='icon-add' onclick="addrow()">新增</div>
+</div>
+
+
+<!--添加文章-->
+
+{{template "admin/article/add.html" .}}
+
+<!--修改文章-->
+{{template "admin/article/edit.html" .}}
+
+
+
+
+</body>
+</html>

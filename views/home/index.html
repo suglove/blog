@@ -1,0 +1,164 @@
+{{template "home/head.html" .}}
+<!-- 视频 -->
+<div class="section" id="top" style="width:100%;position:relative;">
+    <video src="/static/blog/images/diqiu.mp4" autoplay="autoplay" loop="loop" style="width:100%;"></video>
+    <div style="width:80%;height: 500px;position:absolute;top: 200px;left: 50%;margin-left: -40%;">
+        <div class=" bounceInDown wow" style="text-align:center;">
+            <div class="botimg1">
+
+            </div>
+            <p style="color: white;font-weight: 35px;font-size: 35px;">Suglove Blog</p> <br/>
+            <p style="color: white;font-weight: 20px;font-size: 20px;">{{.motto}}</p> <br/>
+
+            <a  href="#counselor" style="margin-top: 30px;" type="button" class="btn btn-success btn-lg active">开始</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- 1开始 -->
+<div class="counselorTop" id="counselor" data-stellar-background-ratio="1.5" data-wow-duration='1s' data-wow-delay='0.5'>
+    <div class="counselor ">
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12" >
+                <div class="col-md-12 col-sm-12  project_content adviser" >
+                    {{/*循环去数据*/}}
+                    {{range $k,$v:= $.list}}
+
+                        <div class="row fadeInUp wow" >
+                            <div class="bt2" style="">
+                                {{if ne $v.Img  ""}}
+                                    <div class="col-md-3" style="height: 170px;" >
+                                        <a href="{{urlfor "home.InfoController.Index" }}{{$v.Id}}" style="width: 100%;height: 170px;display: block;">
+                                            <img src="/static/{{$v.Img}}" alt="" width="190" height="170">
+                                        </a>
+                                    </div>
+                                    <div class="col-md-9" style="height: 170px;">
+                                        <div class="bt5 ">
+                                            <h3  >
+                                                <a href="{{urlfor "home.InfoController.Index" }}{{$v.Id}}"> {{$v.Title}}</a>
+                                            </h3>
+                                            <br>
+                                            <span class='team_text'>
+                                                {{$v.Desc}}...
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="xq" style="width: 100%;height: 40px;float: right;">
+                                        <span style="display: block;margin: 10px 10px;float: left;">
+                                            {{date $v.C_time "Y-m-d H:i:s"}}
+                                            <a href="{{urlfor "home.IndexController.Index" }}{{$v.Type}}">
+
+
+                                                {{range $kk,$vv:= $.category}}
+
+                                                    {{if eq $vv.Id  $v.Type}}
+                                                        {{$vv.Title}}
+                                                    {{else}}
+                                                    {{end}}
+
+                                                {{end}}
+
+                                            </a>
+                                            阅读({{$v.Sort}})
+                                        </span>
+                                        <span  style="display: block;margin: 10px 10px;float: right;">
+                                            <a href="{{urlfor "home.InfoController.Index" }}{{$v.Id}}">阅读全文</a>
+                                        </span>
+
+                                    </div>
+                                {{else}}
+                                    <div class="col-md-12" style="height: 170px;">
+                                        <div class="bt5 ">
+                                            <h3  >
+                                                <a href="{{urlfor "home.InfoController.Index" }}{{$v.Id}}"> {{$v.Title}}</a>
+                                            </h3>
+                                            <br>
+                                            <span class='team_text'>
+                                                {{ $v.Desc}}...
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="xq" style="width: 100%;height: 40px;float: right;">
+                                        <span style="display: block;margin: 10px 10px;float: left;">
+                                            {{date $v.C_time "Y-m-d H:i:s"}}
+                                            <a href="{{urlfor "home.IndexController.Index" }}{{$v.Type}}">
+                                                 {{range $kk,$vv:= $.category}}
+
+                                                     {{if eq $vv.Id  $v.Type}}
+                                                         {{$vv.Title}}
+                                                     {{else}}
+                                                     {{end}}
+
+                                                 {{end}}
+                                            </a>
+                                            阅读({{$v.Sort}})
+                                        </span>
+                                        <span  style="display: block;margin: 10px 10px;float: right;">
+                                            <a href="{{urlfor "home.InfoController.Index" }}{{$v.Id}}">阅读全文</a>
+                                        </span>
+
+                                    </div>
+                                {{end}}
+
+
+
+                            </div>
+
+                        </div>
+                    {{end}}
+                    <!-- page start -->
+                    <div class="pageshow">
+                        <div id="nav_next_page">
+                            {{if gt .Paginator.CurrentPage 1}}
+                                <a class="prev" href="{{urlfor "home.IndexController.Index" }}{{IndexDecrOne $.Paginator.CurrentPage}}">上一页</a>
+                            {{end}}
+                            {{if lt .Paginator.CurrentPage .Paginator.TotalPage}}
+                                <a class="next" href="{{urlfor "home.IndexController.Index" }}{{IndexAddOne $.Paginator.CurrentPage}}">下一页</a>
+                            {{end}}
+                            {{if gt .Paginator.TotalPage 0}}
+                                <span class="current">第 {{.Paginator.CurrentPage}} 页 </span>
+                                <span class="num">总 {{.Paginator.TotalPage}} 页</span>
+                            {{end}}
+                        </div>
+                    </div>
+                    <!-- page end -->
+
+
+                </div>
+                <!--  {include file="public/right"} -->
+
+
+
+
+
+            </div>
+        </div>
+
+
+
+
+
+
+
+    </div>
+</div>
+
+
+<!-- 1结束 -->
+<!-- <div class="row" >
+    <div class="text4">
+
+        <div class="col-md-12 col-sm-12">
+            <div class="botimg  row">
+                <span style="font-size: 14px;">© 2014-2018 ERH(响应通证) 版权所有</span>
+            </div>
+        </div>
+    </div>
+</div>
+     -->
+
+{{template "home/foot.html" .}}

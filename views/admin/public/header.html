@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Suglove后台管理</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="/static/admin/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/static/admin/dist/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="/static/admin/dist/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/static/admin/dist/css/AdminLTE.min.css">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="/static/admin/dist/css/skins/all-skins.min.css">
+
+
+    <style type="text/css">
+        html {
+            overflow: hidden;
+        }
+    </style>
+
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini fixed">
+<div class="wrapper">
+
+    <header class="main-header">
+        <!-- Logo -->
+        <a href="{{urlfor "admin.IndexController.Index"}}" class="logo">
+            <span class="logo-mini"><b>G</b>O</span>
+            <span class="logo-lg"><b>Go</b>Blog</span>
+        </a>
+        <!-- Header Navbar: style can be found in header.less -->
+        <nav class="navbar navbar-static-top">
+            <!-- Sidebar toggle button-->
+            <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </a>
+
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+
+                    <!-- User Account: style can be found in dropdown.less -->
+                    <li class="dropdown user user-menu">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <img src="/static/admin/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+                            <span class="hidden-xs">Suglove</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <!-- User image -->
+                            <li class="user-header">
+                                <img src="/static/admin/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+
+                                <p>
+                                    Alexander Pierce - Web Developer
+                                    <small>Member since Nov. 2012</small>
+                                </p>
+                            </li>
+                            <!-- Menu Footer-->
+                            <li class="user-footer">
+                                <div class="pull-left">
+                                    <a href="#" class="btn btn-default btn-flat">Profile</a>
+                                </div>
+                                <div class="pull-right">
+                                    <a href="{{urlfor "admin.LoginController.Logout"}}" class="btn btn-default btn-flat">Sign out</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper" id="content-wrapper" style="min-height: 421px;">
+        <!--bootstrap tab风格 多标签页-->
+        <div class="content-tabs">
+            <button class="roll-nav roll-left tabLeft" onclick="scrollTabLeft()">
+                <i class="fa fa-backward"></i>
+            </button>
+            <nav class="page-tabs menuTabs tab-ui-menu" id="tab-menu">
+                <div class="page-tabs-content" style="margin-left: 0px;">
+
+                </div>
+            </nav>
+            <button class="roll-nav roll-right tabRight" onclick="scrollTabRight()">
+                <i class="fa fa-forward" style="margin-left: 3px;"></i>
+            </button>
+            <div class="btn-group roll-nav roll-right">
+                <button class="dropdown tabClose" data-toggle="dropdown">
+                    页签操作<i class="fa fa-caret-down" style="padding-left: 3px;"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right" style="min-width: 128px;">
+                    <li><a class="tabReload" href="javascript:refreshTab();">刷新当前</a></li>
+                    <li><a class="tabCloseCurrent" href="javascript:closeCurrentTab();">关闭当前</a></li>
+                    <li><a class="tabCloseAll" href="javascript:closeOtherTabs(true);">全部关闭</a></li>
+                    <li><a class="tabCloseOther" href="javascript:closeOtherTabs();">除此之外全部关闭</a></li>
+                </ul>
+            </div>
+            <button class="roll-nav roll-right fullscreen" onclick="App.handleFullScreen()"><i
+                        class="fa fa-arrows-alt"></i></button>
+        </div>
+        <div class="content-iframe " style="background-color: #ffffff; ">
+            <div class="tab-content " id="tab-content">
+
+            </div>
+        </div>
+    </div>
+    <!-- /.content-wrapper -->
